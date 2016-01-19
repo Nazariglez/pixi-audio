@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pixi.js Test</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/3.0.8/pixi.js"></script>
+  <script src="build/pixi-scene.js"></script>
+  <style>
+    html, body{
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <script>
+    var renderer = new PIXI.autoDetectRenderer(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.view);
+    var stage = new PIXI.Container();
+
+    function animate(){
+      window.requestAnimationFrame(animate);
+      renderer.render(stage);
+    }
+
+
+
+    animate();
+  </script>
+</body>
+</html>
