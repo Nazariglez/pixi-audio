@@ -1,3 +1,5 @@
+import {loaders} from 'pixi.js';
+
 let isHTMLAudioSupported = !!window.audio,
   webAudioContext = window.AudioContext || window.webkitAudioContext,
   isWebAudioSupported = !!webAudioContext,
@@ -14,6 +16,20 @@ if(isAudioSupported){
   isOggSupported = audio.canPlayType('audio/ogg; codecs="vorbis"') !== "";
   isWavSupported = audio.canPlayType('audio/wav') !== "";
   isM4aSupported = audio.canPlayType('audio/mp4; codecs="mp4a.40.5"') !== "";
+
+  //Add some config to the pixi loader
+  if(isMp3Supported)_setAudioExt("mp3");
+  if(isOggSupported)_setAudioExt("ogg");
+  if(isWavSupported)_setAudioExt("wav");
+  if(isM4aSupported)_setAudioExt("m4a");
+}
+
+function _setAudioExt(ext){
+  if(isWebAudioSupported){
+    loaders.Resource.setExtensionXhrType(ext, loaders.Resource.XHR_RESPONSE_TYPE.BUFFER);
+  }else{
+    loaders.Resource.setExtensionLoadType(ext, loaders.Resource.LOAD_TYPE.AUDIO);
+  }
 }
 
 export default {
