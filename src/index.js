@@ -3,6 +3,8 @@ import utils from './utils';
 import AudioManager from './AudioManager';
 import {audioParser, audioUrlParser} from './audioParser';
 
+utils.isWebAudioSupported = false;
+
 if(!PIXI.AudioManager){
   let Loader = PIXI.loaders.Loader;
   Loader.addPixiMiddleware(audioParser);
@@ -26,6 +28,7 @@ if(!PIXI.AudioManager){
   PIXI.loader = new PIXI.loaders.Loader();
   PIXI.AudioManager = AudioManager;
   PIXI.loaders.audioParser = audioParser;
+  PIXI.audio = new AudioManager();
 }
 
 export default {

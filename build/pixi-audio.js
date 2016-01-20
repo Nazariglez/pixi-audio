@@ -29431,9 +29431,11 @@
 	
 	var _AudioManager2 = _interopRequireDefault(_AudioManager);
 	
-	var _audioParser = __webpack_require__(140);
+	var _audioParser = __webpack_require__(141);
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	_utils2.default.isWebAudioSupported = false;
 	
 	if (!_pixi2.default.AudioManager) {
 	  (function () {
@@ -29459,6 +29461,7 @@
 	    _pixi2.default.loader = new _pixi2.default.loaders.Loader();
 	    _pixi2.default.AudioManager = _AudioManager2.default;
 	    _pixi2.default.loaders.audioParser = _audioParser.audioParser;
+	    _pixi2.default.audio = new _AudioManager2.default();
 	  })();
 	}
 	
@@ -29482,8 +29485,9 @@
 	
 	var isHTMLAudioSupported = !!window.audio,
 	    webAudioContext = window.AudioContext || window.webkitAudioContext,
-	    isWebAudioSupported = !!webAudioContext,
-	    isAudioSupported = isWebAudioSupported || isHTMLAudioSupported,
+	    isWebAudioSupported = false,
+	    //!!webAudioContext,
+	isAudioSupported = isWebAudioSupported || isHTMLAudioSupported,
 	    isMp3Supported = false,
 	    isOggSupported = false,
 	    isWavSupported = false,
@@ -29534,25 +29538,246 @@
 
 /***/ },
 /* 139 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
 	
+	var _utils = __webpack_require__(138);
+	
+	var _utils2 = _interopRequireDefault(_utils);
+	
+	var _Audio = __webpack_require__(140);
+	
+	var _Audio2 = _interopRequireDefault(_Audio);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var AudioManager = function AudioManager() {
-	  _classCallCheck(this, AudioManager);
-	};
+	var AudioManager = function () {
+	  function AudioManager() {
+	    _classCallCheck(this, AudioManager);
+	
+	    this.enabled = _utils2.default.isAudioSupported;
+	    this.fxLines = 10;
+	    this.musicLines = 1;
+	
+	    this._music = [];
+	    this._fx = [];
+	
+	    if (_utils2.default.isWebAudioSupported) {
+	      this.context = _utils2.default.globalWebAudioContext;
+	      this.gainNode = _utils2.default.createGainNode(this.context);
+	      this.gainNode.connect(this.context.destination);
+	    }
+	  }
+	
+	  _createClass(AudioManager, [{
+	    key: 'getFx',
+	    value: function getFx(name) {
+	      var audio = new _Audio2.default(AudioManager.audios[name], this);
+	      audio.fx = true;
+	      this._fx.push(audio);
+	      return audio;
+	    }
+	  }, {
+	    key: 'getMusic',
+	    value: function getMusic(name) {
+	      var audio = new _Audio2.default(AudioManager.audios[name], this);
+	      audio.music = true;
+	      this._music.push(audio);
+	      return audio;
+	    }
+	  }]);
+	
+	  return AudioManager;
+	}();
 	
 	AudioManager.audios = {};
 	exports.default = AudioManager;
 
 /***/ },
 /* 140 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	var _pixi = __webpack_require__(1);
+	
+	var _pixi2 = _interopRequireDefault(_pixi);
+	
+	var _utils = __webpack_require__(138);
+	
+	var _utils2 = _interopRequireDefault(_utils);
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+	
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+	
+	var Audio = function (_PIXI$utils$EventEmit) {
+	  _inherits(Audio, _PIXI$utils$EventEmit);
+	
+	  function Audio(data, manager) {
+	    _classCallCheck(this, Audio);
+	
+	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Audio).call(this));
+	
+	    _this._loop = false;
+	    _this._paused = false;
+	    _this._muted = false;
+	    _this._volume = 0;
+	    _this._startTime = 0;
+	    _this._lastPauseTime = 0;
+	    _this._offsetTime = 0;
+	    _this.playing = false;
+	
+	    _this.manager = manager;
+	    _this.data = data;
+	
+	    if (!_utils2.default.isWebAudioSupported) {
+	      _this.audio = new window.Audio();
+	      _this.audio.addEventListener('ended', _this._onEnd.bind(_this));
+	    }
+	    return _this;
+	  }
+	
+	  _createClass(Audio, [{
+	    key: 'play',
+	    value: function play(pause) {
+	      if (!pause && this.paused || this.playing) return this;
+	
+	      if (_utils2.default.isWebAudioSupported) {
+	        console.log(this.manager);
+	        this.audio = this.manager.context.createBufferSource();
+	        this.audio.start = this.audio.start || this.audio.noteOn;
+	        this.audio.stop = this.audio.stop || this.audio.noteOff;
+	
+	        this.audio.buffer = this.data;
+	        this.audio.loop = this.loop;
+	        this._startTime = this.manager.context.currentTime;
+	
+	        this.audio.onended = this._onEnd.bind(this);
+	        this.audio.gainNode = _utils2.default.createGainNode(this.manager.context);
+	        this.audio.gainNode.gain.value = this.muted ? 0 : this.volume;
+	        this.audio.gainNode.connect(this.manager.gainNode);
+	
+	        this.audio.connect(this.audio.gainNode);
+	        this.audio.start(0, pause ? this._lastPauseTime : null);
+	      } else {
+	        this.audio.src = this.data.source.src !== "" ? this.data.source.src : this.data.source.children[0].src;
+	        this.audio.preload = "auto";
+	        this.audio.volume = this.muted ? 0 : this.volume;
+	        this.audio.load();
+	        this.audio.play();
+	      }
+	
+	      return this;
+	    }
+	  }, {
+	    key: 'stop',
+	    value: function stop() {
+	      if (_utils2.default.isWebAudioSupported) {
+	        this.audio.stop(0);
+	      } else {
+	        this.audio.pause();
+	        this.audio.currentTime = 0;
+	      }
+	      this.playing = false;
+	    }
+	  }, {
+	    key: 'reset',
+	    value: function reset() {
+	      this._startTime = 0;
+	      this._lastPauseTime = 0;
+	      this._offsetTime = 0;
+	
+	      if (_utils2.default.isWebAudioSupported) this.audio = null;
+	    }
+	  }, {
+	    key: '_onEnd',
+	    value: function _onEnd() {
+	      this.emit('end');
+	      if (!_utils2.default.isWebAudioSupported) {
+	        if (this.loop) {
+	          this.audio.currentTime = 0;
+	          this.audio.play();
+	        } else {
+	          this.reset();
+	        }
+	      } else {
+	        if (!this.paused) this.reset();
+	      }
+	    }
+	  }, {
+	    key: 'paused',
+	    get: function get() {
+	      return this._paused;
+	    },
+	    set: function set(value) {
+	      if (value === this._paused) return;
+	      if (value) {
+	        if (_utils2.default.isWebAudioSupported) {
+	          this._offsetTime += this.manager.context.currentTime - this._startTime;
+	          this._lastPauseTime = this.offsetTime % this.audio.buffer.duration;
+	          this.audio.stop(0);
+	        } else {
+	          this.audio.pause();
+	        }
+	      } else {
+	        if (_utils2.default.isWebAudioSupported) {
+	          this.play(true);
+	        } else {
+	          this.audio.play();
+	        }
+	      }
+	      this._paused = value;
+	    }
+	  }, {
+	    key: 'loop',
+	    get: function get() {
+	      return this._loop;
+	    },
+	    set: function set(value) {
+	      if (value === this._loop) return;
+	      this._loop = value;
+	      if (_utils2.default.isWebAudioSupported) {
+	        this.audio.loop = value;
+	      }
+	    }
+	  }, {
+	    key: 'volume',
+	    get: function get() {
+	      return this._volume;
+	    },
+	    set: function set(value) {
+	      if (value === this._volume) return;
+	      this._volume = value;
+	    }
+	  }]);
+	
+	  return Audio;
+	}(_pixi2.default.utils.EventEmitter);
+	
+	exports.default = Audio;
+
+/***/ },
+/* 141 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
