@@ -29671,7 +29671,7 @@
 	  _createClass(Audio, [{
 	    key: 'play',
 	    value: function play(pause) {
-	      if (!pause && this.paused || this.playing) return this;
+	      if (!pause && this.paused || !pause && this.playing) return this;
 	      this.playing = true;
 	
 	      if (_utils2.default.isWebAudioSupported) {
@@ -29750,7 +29750,7 @@
 	      if (value) {
 	        if (_utils2.default.isWebAudioSupported) {
 	          this._offsetTime += this.manager.context.currentTime - this._startTime;
-	          this._lastPauseTime = this.offsetTime % this.audio.buffer.duration;
+	          this._lastPauseTime = this._offsetTime % this.audio.buffer.duration;
 	          this.audio.stop(0);
 	        } else {
 	          this.audio.pause();

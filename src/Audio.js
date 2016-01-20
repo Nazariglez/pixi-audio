@@ -28,7 +28,7 @@ export default class Audio extends PIXI.utils.EventEmitter{
   }
 
   play(pause){
-    if((!pause && this.paused) || this.playing) return this;
+    if((!pause && this.paused) || (!pause && this.playing)) return this;
     this.playing = true;
 
     if(utils.isWebAudioSupported){
@@ -46,7 +46,7 @@ export default class Audio extends PIXI.utils.EventEmitter{
       this.audio.gainNode.connect(this.manager.gainNode);
 
       this.audio.connect(this.audio.gainNode);
-      this.audio.start(0, pause ? this._lastPauseTime: null);
+      this.audio.start(0, pause ? this._lastPauseTime : null);
     }else{
       this.audio.src = this.data.children[0].src;
       this.audio.preload = "auto";
@@ -100,7 +100,7 @@ export default class Audio extends PIXI.utils.EventEmitter{
     if(value){
       if(utils.isWebAudioSupported){
         this._offsetTime += this.manager.context.currentTime - this._startTime;
-        this._lastPauseTime = this.offsetTime%this.audio.buffer.duration;
+        this._lastPauseTime = this._offsetTime%this.audio.buffer.duration;
         this.audio.stop(0);
       }else{
         this.audio.pause();
