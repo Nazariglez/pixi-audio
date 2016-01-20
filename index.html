@@ -26,6 +26,13 @@
       renderer.render(stage);
     }
 
+    PIXI.loader.add([
+      {name:"AlphaDance", url: ["./assets/AlphaDance.mp3", "./assets/AlphaDance.ogg"]}
+    ]).load(function(){
+      console.log('done');
+    });
+
+    PIXI.loader.on('progress', ()=>console.log('progress'));
 
 
     animate();

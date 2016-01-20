@@ -4,6 +4,7 @@ import AudioManager from './AudioManager';
 const _allowedExt = ["m4a", "ogg", "mp3", "wav"];
 
 export function audioParser(){
+  console.log('parser');
   return function(resource, next){
     if(!utils.isAudioSupported || !resource.data)return next();
 
@@ -12,8 +13,9 @@ export function audioParser(){
 
     let name = resource.name || resource.url;
     if(utils.isWebAudioSupported){
-      utils.globalWebAudioContext.decodeAudioData(resource.data, ()=>{
-        console.log(arguments);
+      utils.globalWebAudioContext.decodeAudioData(resource.data, (buffer)=>{
+        AudioManager.audios[name] = buffer;
+        next();
       });
     }else{
       AudioManager.audios[name] = resource.data;

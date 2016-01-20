@@ -8,6 +8,7 @@ let isHTMLAudioSupported = !!window.audio,
   isOggSupported = false,
   isWavSupported = false,
   isM4aSupported = false,
+  createGainNode = null,
   globalWebAudioContext = isWebAudioSupported ? new webAudioContext() : null;
 
 if(isAudioSupported){
@@ -22,6 +23,12 @@ if(isAudioSupported){
   if(isOggSupported)_setAudioExt("ogg");
   if(isWavSupported)_setAudioExt("wav");
   if(isM4aSupported)_setAudioExt("m4a");
+
+  if(isWebAudioSupported){
+    createGainNode = function createGainNode(ctx){
+      return ctx.createGain ? ctx.createGain() : ctx.createGainNode();
+    }
+  }
 }
 
 function _setAudioExt(ext){
@@ -41,5 +48,6 @@ export default {
   isOggSupported : isOggSupported,
   isWavSupported : isWavSupported,
   isM4aSupported : isM4aSupported,
-  globalWebAudioContext : globalWebAudioContext
+  globalWebAudioContext : globalWebAudioContext,
+  createGainNode: createGainNode
 };

@@ -29435,23 +29435,32 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	var Loader = _pixi2.default.loaders.Loader;
-	Loader.addPixiMiddleware(_audioParser.audioParser);
+	if (!_pixi2.default.AudioManager) {
+	  (function () {
+	    var Loader = _pixi2.default.loaders.Loader;
+	    Loader.addPixiMiddleware(_audioParser.audioParser);
 	
-	var baseAdd = Loader.prototype.add;
-	Loader.prototype.add = function (name, url, options, cb) {
-	  if ((typeof name === 'undefined' ? 'undefined' : _typeof(name)) === 'object') {
-	    if (Object.prototype.toString.call(name.url) === "[object Array]") {
-	      name.url = (0, _audioParser.audioUrlParser)(name.url);
-	    }
-	  }
+	    var baseAdd = Loader.prototype.add;
+	    Loader.prototype.add = function (name, url, options, cb) {
+	      if ((typeof name === 'undefined' ? 'undefined' : _typeof(name)) === 'object') {
+	        if (Object.prototype.toString.call(name.url) === "[object Array]") {
+	          name.url = (0, _audioParser.audioUrlParser)(name.url);
+	        }
+	      }
 	
-	  if (Object.prototype.toString.call(url) === "[object Array]") {
-	    url = (0, _audioParser.audioUrlParser)(url);
-	  }
+	      if (Object.prototype.toString.call(url) === "[object Array]") {
+	        url = (0, _audioParser.audioUrlParser)(url);
+	      }
 	
-	  return baseAdd.call(this, name, url, options, cb);
-	};
+	      console.log(name, url, options);
+	      return baseAdd.call(this, name, url, options, cb);
+	    };
+	
+	    _pixi2.default.loader = new _pixi2.default.loaders.Loader();
+	    _pixi2.default.AudioManager = _AudioManager2.default;
+	    _pixi2.default.loaders.audioParser = _audioParser.audioParser;
+	  })();
+	}
 	
 	exports.default = {
 	  utils: _utils2.default,
@@ -29479,6 +29488,7 @@
 	    isOggSupported = false,
 	    isWavSupported = false,
 	    isM4aSupported = false,
+	    createGainNode = null,
 	    globalWebAudioContext = isWebAudioSupported ? new webAudioContext() : null;
 	
 	if (isAudioSupported) {
@@ -29493,6 +29503,12 @@
 	  if (isOggSupported) _setAudioExt("ogg");
 	  if (isWavSupported) _setAudioExt("wav");
 	  if (isM4aSupported) _setAudioExt("m4a");
+	
+	  if (isWebAudioSupported) {
+	    createGainNode = function createGainNode(ctx) {
+	      return ctx.createGain ? ctx.createGain() : ctx.createGainNode();
+	    };
+	  }
 	}
 	
 	function _setAudioExt(ext) {
@@ -29512,7 +29528,8 @@
 	  isOggSupported: isOggSupported,
 	  isWavSupported: isWavSupported,
 	  isM4aSupported: isM4aSupported,
-	  globalWebAudioContext: globalWebAudioContext
+	  globalWebAudioContext: globalWebAudioContext,
+	  createGainNode: createGainNode
 	};
 
 /***/ },
@@ -29559,9 +29576,8 @@
 	var _allowedExt = ["m4a", "ogg", "mp3", "wav"];
 	
 	function audioParser() {
+	  console.log('parser');
 	  return function (resource, next) {
-	    var _arguments = arguments;
-	
 	    if (!_utils2.default.isAudioSupported || !resource.data) return next();
 	
 	    var ext = _getExt(resource.url);
@@ -29569,8 +29585,9 @@
 	
 	    var name = resource.name || resource.url;
 	    if (_utils2.default.isWebAudioSupported) {
-	      _utils2.default.globalWebAudioContext.decodeAudioData(resource.data, function () {
-	        console.log(_arguments);
+	      _utils2.default.globalWebAudioContext.decodeAudioData(resource.data, function (buffer) {
+	        _AudioManager2.default.audios[name] = buffer;
+	        next();
 	      });
 	    } else {
 	      _AudioManager2.default.audios[name] = resource.data;
