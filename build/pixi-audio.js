@@ -29435,8 +29435,6 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	_utils2.default.isWebAudioSupported = false;
-	
 	if (!_pixi2.default.AudioManager) {
 	  (function () {
 	    var Loader = _pixi2.default.loaders.Loader;
@@ -29444,17 +29442,20 @@
 	
 	    var baseAdd = Loader.prototype.add;
 	    Loader.prototype.add = function (name, url, options, cb) {
+	      console.log('1', name, url, options);
 	      if ((typeof name === 'undefined' ? 'undefined' : _typeof(name)) === 'object') {
 	        if (Object.prototype.toString.call(name.url) === "[object Array]") {
 	          name.url = (0, _audioParser.audioUrlParser)(name.url);
 	        }
 	      }
 	
+	      console.log('2', name, url, options);
+	
 	      if (Object.prototype.toString.call(url) === "[object Array]") {
 	        url = (0, _audioParser.audioUrlParser)(url);
 	      }
 	
-	      console.log(name, url, options);
+	      console.log('3', name, url, options);
 	      return baseAdd.call(this, name, url, options, cb);
 	    };
 	
@@ -29483,11 +29484,10 @@
 	
 	var _pixi = __webpack_require__(1);
 	
-	var isHTMLAudioSupported = !!window.audio,
+	var isHTMLAudioSupported = !!window.Audio,
 	    webAudioContext = window.AudioContext || window.webkitAudioContext,
-	    isWebAudioSupported = false,
-	    //!!webAudioContext,
-	isAudioSupported = isWebAudioSupported || isHTMLAudioSupported,
+	    isWebAudioSupported = !!webAudioContext,
+	    isAudioSupported = isWebAudioSupported || isHTMLAudioSupported,
 	    isMp3Supported = false,
 	    isOggSupported = false,
 	    isWavSupported = false,
@@ -29565,9 +29565,6 @@
 	    _classCallCheck(this, AudioManager);
 	
 	    this.enabled = _utils2.default.isAudioSupported;
-	    this.fxLines = 10;
-	    this.musicLines = 1;
-	
 	    this._music = [];
 	    this._fx = [];
 	
@@ -29641,7 +29638,7 @@
 	    _this._loop = false;
 	    _this._paused = false;
 	    _this._muted = false;
-	    _this._volume = 0;
+	    _this._volume = 1;
 	    _this._startTime = 0;
 	    _this._lastPauseTime = 0;
 	    _this._offsetTime = 0;
@@ -29649,6 +29646,7 @@
 	
 	    _this.manager = manager;
 	    _this.data = data;
+	    console.log(_this.data, 0);
 	
 	    if (!_utils2.default.isWebAudioSupported) {
 	      _this.audio = new window.Audio();
@@ -29661,9 +29659,9 @@
 	    key: 'play',
 	    value: function play(pause) {
 	      if (!pause && this.paused || this.playing) return this;
+	      this.playing = true;
 	
 	      if (_utils2.default.isWebAudioSupported) {
-	        console.log(this.manager);
 	        this.audio = this.manager.context.createBufferSource();
 	        this.audio.start = this.audio.start || this.audio.noteOn;
 	        this.audio.stop = this.audio.stop || this.audio.noteOff;
@@ -29680,7 +29678,7 @@
 	        this.audio.connect(this.audio.gainNode);
 	        this.audio.start(0, pause ? this._lastPauseTime : null);
 	      } else {
-	        this.audio.src = this.data.source.src !== "" ? this.data.source.src : this.data.source.children[0].src;
+	        this.audio.src = this.data.children[0].src;
 	        this.audio.preload = "auto";
 	        this.audio.volume = this.muted ? 0 : this.volume;
 	        this.audio.load();

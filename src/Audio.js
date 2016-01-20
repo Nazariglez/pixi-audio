@@ -5,7 +5,7 @@ export default class Audio extends PIXI.utils.EventEmitter{
   _loop = false;
   _paused = false;
   _muted = false;
-  _volume = 0;
+  _volume = 1;
 
   _startTime = 0;
   _lastPauseTime = 0;
@@ -17,6 +17,7 @@ export default class Audio extends PIXI.utils.EventEmitter{
     super();
     this.manager = manager;
     this.data = data;
+    console.log(this.data,0);
 
     if(!utils.isWebAudioSupported){
       this.audio = new window.Audio();
@@ -26,9 +27,9 @@ export default class Audio extends PIXI.utils.EventEmitter{
 
   play(pause){
     if((!pause && this.paused) || this.playing) return this;
+    this.playing = true;
 
     if(utils.isWebAudioSupported){
-      console.log(this.manager)
       this.audio = this.manager.context.createBufferSource();
       this.audio.start = this.audio.start || this.audio.noteOn;
       this.audio.stop = this.audio.stop || this.audio.noteOff;
@@ -45,7 +46,7 @@ export default class Audio extends PIXI.utils.EventEmitter{
       this.audio.connect(this.audio.gainNode);
       this.audio.start(0, pause ? this._lastPauseTime: null);
     }else{
-      this.audio.src = this.data.source.src !== "" ? this.data.source.src : this.data.source.children[0].src;
+      this.audio.src = this.data.children[0].src;
       this.audio.preload = "auto";
       this.audio.volume = this.muted ? 0 : this.volume;
       this.audio.load();

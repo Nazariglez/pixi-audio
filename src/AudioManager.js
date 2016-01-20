@@ -6,9 +6,6 @@ export default class AudioManager{
 
   constructor(){
     this.enabled = utils.isAudioSupported;
-    this.fxLines = 10;
-    this.musicLines = 1;
-
     this._music = [];
     this._fx = [];
 

@@ -1,8 +1,8 @@
 import {loaders} from 'pixi.js';
 
-let isHTMLAudioSupported = !!window.audio,
+let isHTMLAudioSupported = !!window.Audio,
   webAudioContext = window.AudioContext || window.webkitAudioContext,
-  isWebAudioSupported = false, //!!webAudioContext,
+  isWebAudioSupported = !!webAudioContext,
   isAudioSupported = isWebAudioSupported || isHTMLAudioSupported,
   isMp3Supported = false,
   isOggSupported = false,
