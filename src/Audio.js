@@ -13,6 +13,9 @@ export default class Audio extends PIXI.utils.EventEmitter{
 
   playing = false;
 
+  _fx = true;
+  _music = false;
+
   constructor(data, manager){
     super();
     this.manager = manager;
@@ -74,6 +77,10 @@ export default class Audio extends PIXI.utils.EventEmitter{
     if(utils.isWebAudioSupported)this.audio = null;
   }
 
+  remove(){
+    this.manager.removeAudio(this);
+  }
+
   _onEnd(){
     this.emit('end');
     if(!utils.isWebAudioSupported){
@@ -122,5 +129,19 @@ export default class Audio extends PIXI.utils.EventEmitter{
   set volume(value){
     if(value === this._volume)return;
     this._volume = value;
+  }
+
+  get fx(){return this._fx};
+  set fx(value){
+    if(value === this._fx)return;
+    this.music = !value;
+    this._fx = value;
+  }
+
+  get music(){return this._music};
+  set music(value){
+    if(value === this._music)return;
+    this.fx = !value;
+    this._music = value;
   }
 }

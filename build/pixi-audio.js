@@ -29565,8 +29565,7 @@
 	    _classCallCheck(this, AudioManager);
 	
 	    this.enabled = _utils2.default.isAudioSupported;
-	    this._music = [];
-	    this._fx = [];
+	    this.sounds = [];
 	
 	    if (_utils2.default.isWebAudioSupported) {
 	      this.context = _utils2.default.globalWebAudioContext;
@@ -29576,19 +29575,10 @@
 	  }
 	
 	  _createClass(AudioManager, [{
-	    key: 'getFx',
-	    value: function getFx(name) {
+	    key: 'getAudio',
+	    value: function getAudio(name) {
 	      var audio = new _Audio2.default(AudioManager.audios[name], this);
-	      audio.fx = true;
-	      this._fx.push(audio);
-	      return audio;
-	    }
-	  }, {
-	    key: 'getMusic',
-	    value: function getMusic(name) {
-	      var audio = new _Audio2.default(AudioManager.audios[name], this);
-	      audio.music = true;
-	      this._music.push(audio);
+	      this.sounds.push(audio);
 	      return audio;
 	    }
 	  }]);
@@ -29643,6 +29633,8 @@
 	    _this._lastPauseTime = 0;
 	    _this._offsetTime = 0;
 	    _this.playing = false;
+	    _this._fx = true;
+	    _this._music = false;
 	
 	    _this.manager = manager;
 	    _this.data = data;
@@ -29708,6 +29700,11 @@
 	      if (_utils2.default.isWebAudioSupported) this.audio = null;
 	    }
 	  }, {
+	    key: 'remove',
+	    value: function remove() {
+	      this.manager.removeAudio(this);
+	    }
+	  }, {
 	    key: '_onEnd',
 	    value: function _onEnd() {
 	      this.emit('end');
@@ -29766,6 +29763,26 @@
 	    set: function set(value) {
 	      if (value === this._volume) return;
 	      this._volume = value;
+	    }
+	  }, {
+	    key: 'fx',
+	    get: function get() {
+	      return this._fx;
+	    },
+	    set: function set(value) {
+	      if (value === this._fx) return;
+	      this.music = !value;
+	      this._fx = value;
+	    }
+	  }, {
+	    key: 'music',
+	    get: function get() {
+	      return this._music;
+	    },
+	    set: function set(value) {
+	      if (value === this._music) return;
+	      this.fx = !value;
+	      this._music = value;
 	    }
 	  }]);
 	

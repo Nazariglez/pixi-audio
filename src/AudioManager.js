@@ -6,8 +6,7 @@ export default class AudioManager{
 
   constructor(){
     this.enabled = utils.isAudioSupported;
-    this._music = [];
-    this._fx = [];
+    this.sounds = [];
 
     if(utils.isWebAudioSupported){
         this.context = utils.globalWebAudioContext;
@@ -16,17 +15,27 @@ export default class AudioManager{
     }
   }
 
-  getFx(name){
+  getAudio(name){
     let audio = new Audio(AudioManager.audios[name], this);
-    audio.fx = true;
-    this._fx.push(audio);
+    this.sounds.push(audio);
     return audio;
   }
 
-  getMusic(name){
-    let audio = new Audio(AudioManager.audios[name], this);
-    audio.music = true;
-    this._music.push(audio);
-    return audio;
+  removeAudio(audio){
+    let index = this.sounds.indexOf(audio);
+    if(index !== -1){
+      this.sounds.splice(index, 1);
+    }
   }
+
+  muteAll(value){
+    value = (value === false);
+    let len = this.sounds.length;
+    for(let i = 0; i < len; i++)this.sounds[i].mute = value;
+  }
+
+  unmuteAll(){
+    return this.muteAll(false);
+  }
+
 }
