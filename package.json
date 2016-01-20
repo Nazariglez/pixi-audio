@@ -7,10 +7,14 @@
   "license": "MIT",
   "keywords": [
     "pixi",
-    "scenemanager",
-    "scene",
-    "screenscale",
-    "scalemanager"
+    "audiomanager",
+    "audio",
+    "music",
+    "sounds",
+    "mp3",
+    "ogg",
+    "m4a",
+    "wav"
   ],
   "homepage": "https://github.com/Nazariglez/pixi-audio",
   "repository": {
