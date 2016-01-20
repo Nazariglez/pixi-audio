@@ -20,7 +20,6 @@ export default class Audio extends PIXI.utils.EventEmitter{
     super();
     this.manager = manager;
     this.data = data;
-    console.log(this.data,0);
 
     if(!utils.isWebAudioSupported){
       this.audio = new window.Audio();
@@ -128,6 +127,11 @@ export default class Audio extends PIXI.utils.EventEmitter{
   get volume(){return this._volume}
   set volume(value){
     if(value === this._volume)return;
+    if(utils.isWebAudioSupported){
+      this.audio.gainNode.gain.value = this.muted ? 0 : this.volume;
+    }else{
+      this.audio.volume = this.muted ? 0 : this.volume;
+    }
     this._volume = value;
   }
 
@@ -143,5 +147,16 @@ export default class Audio extends PIXI.utils.EventEmitter{
     if(value === this._music)return;
     this.fx = !value;
     this._music = value;
+  }
+
+  get muted(){return this._muted};
+  set muted(value){
+    if(value === this._muted)return;
+    this._muted = value;
+    if(utils.isWebAudioSupported){
+      this.audio.gainNode.gain.value = this._muted ? 0 : this.volume;
+    }else{
+      this.audio.volume = this._muted ? 0 : this.volume;
+    }
   }
 }

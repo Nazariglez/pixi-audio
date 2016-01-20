@@ -29660,7 +29660,6 @@
 	
 	    _this.manager = manager;
 	    _this.data = data;
-	    console.log(_this.data, 0);
 	
 	    if (!_utils2.default.isWebAudioSupported) {
 	      _this.audio = new window.Audio();
@@ -29784,6 +29783,11 @@
 	    },
 	    set: function set(value) {
 	      if (value === this._volume) return;
+	      if (_utils2.default.isWebAudioSupported) {
+	        this.audio.gainNode.gain.value = this.muted ? 0 : this.volume;
+	      } else {
+	        this.audio.volume = this.muted ? 0 : this.volume;
+	      }
 	      this._volume = value;
 	    }
 	  }, {
@@ -29805,6 +29809,20 @@
 	      if (value === this._music) return;
 	      this.fx = !value;
 	      this._music = value;
+	    }
+	  }, {
+	    key: 'muted',
+	    get: function get() {
+	      return this._muted;
+	    },
+	    set: function set(value) {
+	      if (value === this._muted) return;
+	      this._muted = value;
+	      if (_utils2.default.isWebAudioSupported) {
+	        this.audio.gainNode.gain.value = this._muted ? 0 : this.volume;
+	      } else {
+	        this.audio.volume = this._muted ? 0 : this.volume;
+	      }
 	    }
 	  }]);
 	
