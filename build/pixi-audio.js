@@ -29581,6 +29581,28 @@
 	      this.sounds.push(audio);
 	      return audio;
 	    }
+	  }, {
+	    key: 'removeAudio',
+	    value: function removeAudio(audio) {
+	      var index = this.sounds.indexOf(audio);
+	      if (index !== -1) {
+	        this.sounds.splice(index, 1);
+	      }
+	    }
+	  }, {
+	    key: 'muteAll',
+	    value: function muteAll(value) {
+	      value = value === false;
+	      var len = this.sounds.length;
+	      for (var i = 0; i < len; i++) {
+	        this.sounds[i].mute = value;
+	      }
+	    }
+	  }, {
+	    key: 'unmuteAll',
+	    value: function unmuteAll() {
+	      return this.muteAll(false);
+	    }
 	  }]);
 	
 	  return AudioManager;
