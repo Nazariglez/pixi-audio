@@ -28,14 +28,46 @@ export default class AudioManager{
     }
   }
 
-  muteAll(value){
-    value = (value === false);
+  getFx(){
+    let fx = [];
     let len = this.sounds.length;
-    for(let i = 0; i < len; i++)this.sounds[i].mute = value;
+    for(let i = 0; i < len; i++){
+      if(this.sounds[i].fx){
+        fx.push(this.sounds[i]);
+      }
+    }
+    return fx;
   }
 
-  unmuteAll(){
-    return this.muteAll(false);
+  getMusic(){
+    let music = [];
+    let len = this.sounds.length;
+    for(let i = 0; i < len; i++){
+      if(this.sounds[i].music){
+        music.push(this.sounds[i]);
+      }
+    }
+    return music;
+  }
+
+  mute(value){
+    value = (value !== false);
+    let len = this.sounds.length;
+    for(let i = 0; i < len; i++)this.sounds[i].muted = value;
+  }
+
+  unmute(){
+    return this.mute(false);
+  }
+
+  pause(value){
+    value = (value !== false);
+    let len = this.sounds.length;
+    for(let i = 0; i < len; i++)this.sounds[i].paused = value;
+  }
+
+  resume(){
+    return this.pause(false);
   }
 
 }

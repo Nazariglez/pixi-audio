@@ -30,6 +30,7 @@ export default class Audio extends PIXI.utils.EventEmitter{
   play(pause){
     if((!pause && this.paused) || (!pause && this.playing)) return this;
     this.playing = true;
+    this.emit('play');
 
     if(utils.isWebAudioSupported){
       this.audio = this.manager.context.createBufferSource();
@@ -59,6 +60,8 @@ export default class Audio extends PIXI.utils.EventEmitter{
   }
 
   stop(){
+    if(!this.playing)return this;
+
     if(utils.isWebAudioSupported){
       this.audio.stop(0);
     }else{
@@ -66,6 +69,9 @@ export default class Audio extends PIXI.utils.EventEmitter{
       this.audio.currentTime = 0;
     }
     this.playing = false;
+    this.emit('stop');
+
+    return this;
   }
 
   reset(){
@@ -81,16 +87,19 @@ export default class Audio extends PIXI.utils.EventEmitter{
   }
 
   _onEnd(){
-    this.emit('end');
     if(!utils.isWebAudioSupported){
       if(this.loop){
         this.audio.currentTime = 0;
         this.audio.play();
       }else{
         this.reset();
+        this.emit('end');
       }
     }else{
-      if(!this.paused)this.reset();
+      if(!this.paused){
+        this.reset();
+        this.emit('end');
+      }
     }
   }
 
@@ -105,12 +114,14 @@ export default class Audio extends PIXI.utils.EventEmitter{
       }else{
         this.audio.pause();
       }
+      this.emit('pause');
     }else{
       if(utils.isWebAudioSupported){
         this.play(true);
       }else{
         this.audio.play();
       }
+      this.emit('resume');
     }
     this._paused = value;
   }

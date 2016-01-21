@@ -4,7 +4,6 @@ import AudioManager from './AudioManager';
 const _allowedExt = ["m4a", "ogg", "mp3", "wav"];
 
 export function audioParser(){
-  console.log('parser');
   return function(resource, next){
     if(!utils.isAudioSupported || !resource.data)return next();
 
