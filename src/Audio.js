@@ -80,7 +80,7 @@ export default class Audio extends PIXI.utils.EventEmitter{
     this._offsetTime = 0;
 
     this.playing = false;
-    if(utils.isWebAudioSupported)this.audio = null;
+    //if(utils.isWebAudioSupported)this.audio = null;
   }
 
   remove(){
@@ -111,16 +111,16 @@ export default class Audio extends PIXI.utils.EventEmitter{
       if(utils.isWebAudioSupported){
         this._offsetTime += this.manager.context.currentTime - this._startTime;
         this._lastPauseTime = this._offsetTime%this.audio.buffer.duration;
-        this.audio.stop(0);
+        if(this.audio)this.audio.stop(0);
       }else{
-        this.audio.pause();
+        if(this.audio)this.audio.pause();
       }
       this.emit('pause');
     }else{
       if(utils.isWebAudioSupported){
         this.play(true);
       }else{
-        this.audio.play();
+        if(this.audio)this.audio.play();
       }
       this.emit('resume');
     }
@@ -131,7 +131,7 @@ export default class Audio extends PIXI.utils.EventEmitter{
   set loop(value){
     if(value === this._loop)return;
     this._loop = value;
-    if(utils.isWebAudioSupported){
+    if(utils.isWebAudioSupported&&this.audio){
       this.audio.loop = value;
     }
   }
@@ -140,9 +140,9 @@ export default class Audio extends PIXI.utils.EventEmitter{
   set volume(value){
     if(value === this._volume)return;
     if(utils.isWebAudioSupported){
-      this.audio.gainNode.gain.value = this.muted ? 0 : this.volume;
+      if(this.audio)this.audio.gainNode.gain.value = this.muted ? 0 : this.volume;
     }else{
-      this.audio.volume = this.muted ? 0 : this.volume;
+      if(this.audio)this.audio.volume = this.muted ? 0 : this.volume;
     }
     this._volume = value;
   }
@@ -150,14 +150,14 @@ export default class Audio extends PIXI.utils.EventEmitter{
   get fx(){return this._fx};
   set fx(value){
     if(value === this._fx)return;
-    this.music = !value;
+    this._music = !value;
     this._fx = value;
   }
 
   get music(){return this._music};
   set music(value){
     if(value === this._music)return;
-    this.fx = !value;
+    this._fx = !value;
     this._music = value;
   }
 
@@ -166,9 +166,9 @@ export default class Audio extends PIXI.utils.EventEmitter{
     if(value === this._muted)return;
     this._muted = value;
     if(utils.isWebAudioSupported){
-      this.audio.gainNode.gain.value = this._muted ? 0 : this.volume;
+      if(this.audio)this.audio.gainNode.gain.value = this._muted ? 0 : this.volume;
     }else{
-      this.audio.volume = this._muted ? 0 : this.volume;
+      if(this.audio)this.audio.volume = this._muted ? 0 : this.volume;
     }
   }
 }
