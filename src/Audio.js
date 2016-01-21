@@ -79,6 +79,7 @@ export default class Audio extends PIXI.utils.EventEmitter{
     this._lastPauseTime = 0;
     this._offsetTime = 0;
 
+    this.playing = false;
     if(utils.isWebAudioSupported)this.audio = null;
   }
 
