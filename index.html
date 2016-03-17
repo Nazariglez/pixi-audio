@@ -26,12 +26,38 @@
       renderer.render(stage);
     }
 
+    var playTexture = new PIXI.Graphics()
+      .beginFill(0xffffff)
+      .drawRect(0, 0, 100, 100)
+      .endFill()
+      .generateTexture();
+
+    var scale = Math.min(renderer.width/800, renderer.height/600);
+
     PIXI.loader.add([
       {name:"AlphaDance", url: ["./assets/AlphaDance.mp3", "./assets/AlphaDance.ogg"]}
     ]).load(function(){
-      console.log('done');
-    });
+      var playButton = new PIXI.Sprite(playTexture);
+      playButton.anchor.set(0.5);
+      playButton.scale.set(scale);
+      playButton.position.set(renderer.width/2, renderer.height/2);
+      playButton.interactive = true;
+      stage.addChild(playButton);
 
+      var music = PIXI.audioManager.getAudio("AlphaDance");
+      music.loop = true;
+
+      function _onClick(evt){
+        if(!music.playing){
+          music.play();
+        }else{
+          music.paused = !music.paused;
+        }
+      }
+
+      playButton.on('click', _onClick)
+        .on('tap', _onClick);
+    });
 
     animate();
   </script>
