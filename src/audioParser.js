@@ -1,7 +1,7 @@
 import utils from './utils';
 import AudioManager from './AudioManager';
 
-const _allowedExt = ["m4a", "ogg", "mp3", "wav"];
+const _allowedExt = ["m4a", "ogg", "mp3", "wav", "aac"];
 
 export function audioParser(){
   return function(resource, next){
@@ -48,6 +48,7 @@ function _canPlay(ext){
     case "mp3": canPlay = utils.isMp3Supported; break;
     case "ogg": canPlay = utils.isOggSupported; break;
     case "wav": canPlay = utils.isWavSupported; break;
+	case "aac": canPlay = utils.isAacSupported; break;
   }
 
   return canPlay;

@@ -1,4 +1,4 @@
-import PIXI from'pixi.js';
+import 'pixi.js';
 import utils from './utils';
 import AudioManager from './AudioManager';
 import {audioParser, audioUrlParser} from './audioParser';
